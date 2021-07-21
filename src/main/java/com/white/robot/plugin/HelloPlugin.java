@@ -1,6 +1,6 @@
 package com.white.robot.plugin;
 
-import com.white.robot.MessageEnum;
+import com.white.robot.warehouse.MessageEnum;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import onebot.OnebotBase;
@@ -35,13 +35,21 @@ public class HelloPlugin extends BotPlugin {
         // 这里展示了RawMessage的用法（纯String）
         long groupId = event.getGroupId();
         String text = event.getRawMessage();
-        for (MessageEnum messageEnum : MessageEnum.values()){
+        for (MessageEnum messageEnum : MessageEnum.values()) {
             if (messageEnum.getReq().equals(text)) {
                 bot.sendGroupMsg(groupId, messageEnum.getResp(), false);
+                return MESSAGE_BLOCK;
             }
         }
 
 
+        return MESSAGE_IGNORE;
+    }
+
+    @Override
+    public int onGroupIncreaseNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupIncreaseNoticeEvent event) {
+        long groupId = event.getGroupId();
+        bot.sendGroupMsg(groupId, "欢迎新生来到北邮国院，请仔细阅读群公告和群文件，有问题在群里问。", false);
         return MESSAGE_BLOCK;
     }
 }
