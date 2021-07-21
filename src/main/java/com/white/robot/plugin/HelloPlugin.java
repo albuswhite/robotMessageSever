@@ -3,6 +3,7 @@ package com.white.robot.plugin;
 import com.white.robot.warehouse.MessageEnum;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
+import net.lz1998.pbbot.utils.Msg;
 import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,8 @@ public class HelloPlugin extends BotPlugin {
     @Override
     public int onGroupIncreaseNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupIncreaseNoticeEvent event) {
         long groupId = event.getGroupId();
-        bot.sendGroupMsg(groupId, "欢迎新生来到北邮国院，请仔细阅读群公告和群文件并修改群名片，有问题在群里问。", false);
+        Msg msg = Msg.builder().at(event.getUserId()).text("欢迎新生来到北邮国院，请仔细阅读群公告和群文件并修改群名片，有问题在群里问。");
+        bot.sendGroupMsg(groupId, msg, false);
         return MESSAGE_BLOCK;
     }
 }

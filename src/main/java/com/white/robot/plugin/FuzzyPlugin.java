@@ -1,7 +1,6 @@
 package com.white.robot.plugin;
 
 import com.white.robot.warehouse.FuzzyEnum;
-import com.white.robot.warehouse.MessageEnum;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import onebot.OnebotEvent;

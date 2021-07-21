@@ -4,6 +4,7 @@ spring:
       - com.white.robot.plugin.LogPlugin # 日志插件
       - com.white.robot.plugin.QuestionPlugin # 问题插件
       - com.white.robot.plugin.HelloPlugin # 测试插件
+      - com.white.robot.plugin.YellowPlugin #GHS
       - com.white.robot.plugin.FuzzyPlugin # 模糊插件
 
 server:
