@@ -49,7 +49,7 @@ public class HelloPlugin extends BotPlugin {
     @Override
     public int onGroupIncreaseNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupIncreaseNoticeEvent event) {
         long groupId = event.getGroupId();
-        bot.sendGroupMsg(groupId, "欢迎新生来到北邮国院，请仔细阅读群公告和群文件，有问题在群里问。", false);
+        bot.sendGroupMsg(groupId, "欢迎新生来到北邮国院，请仔细阅读群公告和群文件并修改群名片，有问题在群里问。", false);
         return MESSAGE_BLOCK;
     }
 }
