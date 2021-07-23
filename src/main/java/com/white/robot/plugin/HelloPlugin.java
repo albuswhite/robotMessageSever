@@ -50,7 +50,7 @@ public class HelloPlugin extends BotPlugin {
     @Override
     public int onGroupIncreaseNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupIncreaseNoticeEvent event) {
         long groupId = event.getGroupId();
-        Msg msg = Msg.builder().at(event.getUserId()).text("欢迎新生来到北邮国院，请仔细阅读群公告和群文件并修改群名片，有问题在群里问。");
+        Msg msg = Msg.builder().at(event.getUserId()).text("欢迎新生来到北邮国院，请仔细阅读‼️群公告‼️和群文件并修改群名片，有问题在群里问。");
         bot.sendGroupMsg(groupId, msg, false);
         return MESSAGE_BLOCK;
     }
