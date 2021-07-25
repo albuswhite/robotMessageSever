@@ -26,7 +26,7 @@ public class QuestionPlugin extends BotPlugin {
                 String text = message.getDataMap().get("text");
                 if ("#list".equals(text)) {
                     Msg msg = Msg.builder()
-                            .text("请输入#数字标号来自动获取答案")
+                            .text("请输入#数字标号来自动获取答案\n")
                             .text("1. 国际学院在北邮究竟是什么样的地位？会不会被其他学院歧视？\n")
                             .text("2. 国际学院三个专业分别如何？可以转专业吗？\n")
                             .text("3. 国院未来就业情况如何？深造情况如何？\n")
