@@ -17,6 +17,7 @@ public class FuzzyPlugin extends BotPlugin {
         for (FuzzyEnum fuzzyEnum : FuzzyEnum.values()) {
             if (text.contains(fuzzyEnum.getReq())) {
                 bot.sendGroupMsg(event.getGroupId(), fuzzyEnum.getResp(), false);
+                return MESSAGE_BLOCK;
             }
         }
 
