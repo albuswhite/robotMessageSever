@@ -6,6 +6,10 @@ spring:
       - com.white.robot.plugin.HelloPlugin # 测试插件
       - com.white.robot.plugin.YellowPlugin #GHS
       - com.white.robot.plugin.FuzzyPlugin # 模糊插件
-
+  datasource:
+    url: jdbc:mysql://localhost:3306/robotMsg
+    username: root
+    password: 6274998a
+    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 8081
