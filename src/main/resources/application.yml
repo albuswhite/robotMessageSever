@@ -2,14 +2,21 @@ spring:
   bot:
     plugin-list: # 配置插件列表（有序），如果插件返回0，继续执行剩余插件，如果插件返回1，终止剩余插件执行
       - com.white.robot.plugin.LogPlugin # 日志插件
-      - com.white.robot.plugin.QuestionPlugin # 问题插件
       - com.white.robot.plugin.HelloPlugin # 测试插件
       - com.white.robot.plugin.YellowPlugin #GHS
       - com.white.robot.plugin.FuzzyPlugin # 模糊插件
   datasource:
-    url: jdbc:mysql://localhost:3306/robotMsg
+    url: jdbc:mysql://localhost:3306/robotMessage?serverTimezone=UTC&amp&useUnicode=true&amp&characterEncoding=utf-8
     username: root
     password: 6274998a
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
 server:
   port: 8081
+  servlet:
+    encoding:
+      enabled: true
+      force: true
+      charset: UTF-8

@@ -8,14 +8,16 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode
-@TableName(value = "preciseMatch", autoResultMap = true)
+@TableName(value = "faceMatch", autoResultMap = true)
 @NoArgsConstructor
 @Data
-public class preciseMessage {
+public class FaceMessage {
     @TableField(value = "id")
     private String id;
-    @TableField(value = "keyword")
-    private String keyword;
+    @TableField(value = "faceId")
+    private String faceId;
     @TableField(value = "response")
     private String response;
+
+
 }

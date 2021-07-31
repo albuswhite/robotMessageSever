@@ -1,17 +1,17 @@
 package com.white.robot.entity;
 
+
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
 @EqualsAndHashCode
-@TableName(value = "fuzzyMatch", autoResultMap = true)
+@TableName(value = "preciseMatch", autoResultMap = true)
 @NoArgsConstructor
 @Data
-public class fuzzyMessage {
+public class PreciseMessage {
     @TableField(value = "id")
     private String id;
     @TableField(value = "keyword")

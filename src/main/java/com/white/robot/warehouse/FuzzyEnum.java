@@ -16,7 +16,7 @@ public enum FuzzyEnum {
     M10("团关系","团关系问题请看群公告"),
     M11("迎新系统","迎新系统还没开放哦"),
     M9("转专业","果园不可以转专业");
-    
+
     private final String req;
     private final String resp;
 
