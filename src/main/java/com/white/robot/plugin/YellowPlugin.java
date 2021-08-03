@@ -19,12 +19,7 @@ public class YellowPlugin extends BotPlugin {
             }
             return MESSAGE_BLOCK;
         }
-//        for (MessageEnum messageEnum : MessageEnum.values()) {
-//            if (messageEnum.getReq().equals(text)) {
-//                bot.sendGroupMsg(groupId, messageEnum.getResp(), false);
-//                return MESSAGE_BLOCK;
-//            }
-//        }
+
 
 
         return MESSAGE_IGNORE;
