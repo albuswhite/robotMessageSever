@@ -1,19 +1,31 @@
 package com.white.robot.plugin;
 
+import com.white.robot.entity.Believer;
+import com.white.robot.service.BelieverService;
+import com.white.robot.service.FuzzyService;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
+import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
+import java.util.List;
 
 @Component
 public class FetePlugin extends BotPlugin {
+
+    @Autowired
+    private BelieverService believerService;
+
+
     @SneakyThrows
     @Override
     public int onGroupMessage(@NotNull Bot bot, @NotNull OnebotEvent.GroupMessageEvent event) {
+
         Calendar c1 = Calendar.getInstance();
         int hour = c1.get(Calendar.HOUR_OF_DAY);
         int minute = c1.get(Calendar.MINUTE);
@@ -22,6 +34,36 @@ public class FetePlugin extends BotPlugin {
         long groupId = event.getGroupId();
         long userId = event.getUserId();
         String text = event.getRawMessage();
+
+        List<OnebotBase.Message> messageChain = event.getMessageList();
+        if (messageChain.size() > 0) {
+            OnebotBase.Message message = messageChain.get(0);
+            if (message.getType().equals("at") && message.getDataMap().get("qq").equals("824722914")) {
+
+                OnebotBase.Message register = messageChain.get(1);
+                String info = register.getDataMap().get("text");
+                if (info.startsWith("为日立献礼，我是")) {
+                    info = info.replace("为日立献礼，我是", "");
+                    Believer believer = new Believer();
+                    believer.setQQ(event.getUserId());
+                    believer.setLevel("浅信徒");
+                    believer.setName(info);
+                    if (believerService.save(believer))
+                    {
+                        bot.sendGroupMsg(groupId, "恭喜"+info+"，日立神将注视着你前行", false);
+                        return MESSAGE_BLOCK;
+                    }else {
+                        bot.sendGroupMsg(groupId, "请勿重复注册", false);
+                        return MESSAGE_BLOCK;
+                    }
+
+                }
+
+
+            }
+        }
+
+
 
 
         if (text.equals("煌煌天日渊渟岳立")) {
@@ -47,12 +89,10 @@ public class FetePlugin extends BotPlugin {
             }
             return MESSAGE_BLOCK;
         }
-     if ((hour <18 ) || (hour>19))
-     {
-         bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日18:00-19:00", false);
-     }
-
-
+//        if ((hour != 18) && (hour != 12)) {
+//            bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
+//            return MESSAGE_BLOCK;
+//        }
 
 
         return MESSAGE_IGNORE;
