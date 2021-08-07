@@ -45,7 +45,7 @@ public class FetePlugin extends BotPlugin {
                 if (info.startsWith("为日立献礼，我是")) {
                     info = info.replace("为日立献礼，我是", "");
                     Believer believer = new Believer();
-                    believer.setQQ(event.getUserId());
+                    believer.setQQ(String.valueOf(event.getUserId()));
                     believer.setLevel("浅信徒");
                     believer.setName(info);
                     if (believerService.save(believer))

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Believer {
     @TableField(value = "QQ")
-    private long QQ;
+    private String QQ;
     @TableField(value = "name")
     private String name;
     @TableField(value = "level")
@@ -21,6 +21,4 @@ public class Believer {
     private long score;
     @TableField(value = "title")
     private String title;
-    @TableField(value = "id")
-    private String id;
 }
