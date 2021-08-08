@@ -7,18 +7,18 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode
-@TableName(value = "feteMatch", autoResultMap = true)
+@TableName(value = "scoreRecord", autoResultMap = true)
 @NoArgsConstructor
 @Data
-public class FeteMessage {
-    @TableField(value = "id")
-    private String id;
-    @TableField(value = "keyword")
-    private String keyword;
-    @TableField(value = "response")
-    private String response;
+public class ScoreRecord {
+    @TableField(value = "QQ")
+    private String QQ;
+    @TableField(value = "name")
+    private String name;
     @TableField(value = "level")
-    private int level;
+    private String level;
     @TableField(value = "score")
-    private int score;
+    private long score;
+    @TableField(value = "title")
+    private String title;
 }
