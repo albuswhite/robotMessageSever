@@ -2,8 +2,10 @@ package com.white.robot.plugin;
 
 import com.white.robot.entity.Believer;
 import com.white.robot.entity.FeteMessage;
+import com.white.robot.entity.ScoreRecord;
 import com.white.robot.service.BelieverService;
 import com.white.robot.service.FeteService;
+import com.white.robot.service.ScoreService;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
@@ -25,6 +27,8 @@ public class FetePlugin extends BotPlugin {
     private BelieverService believerService;
     @Autowired
     private FeteService feteService;
+    @Autowired
+    private ScoreService scoreService;
 
     @SneakyThrows
     @Override
@@ -91,16 +95,21 @@ public class FetePlugin extends BotPlugin {
 
         if (text.equals("日立经")) {
 //        if ((hour != 18) && (hour != 12)) {
-            if ((hour != 22) ) {
-            bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
-            return MESSAGE_BLOCK;
-        }
+            if ((hour != 22)) {
+                bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
+                return MESSAGE_BLOCK;
+            }
             int level = Lottery(probability);
             FeteMessage feteMessage = feteService.getByLevel(level);
             if (!(feteMessage == null)) {
-                Msg msg = Msg.builder().at(event.getUserId()).text("恭喜，获得积分"+feteMessage.getScore());
-
                 bot.sendGroupMsg(groupId, feteMessage.getResponse(), false);
+
+                ScoreRecord scoreRecord = new ScoreRecord();
+                scoreRecord.setQQ(String.valueOf(event.getUserId()));
+                scoreRecord.setScore(feteMessage.getScore());
+                scoreService.save(scoreRecord);
+                Msg msg = Msg.builder().at(event.getUserId()).text("恭喜，获得积分" + feteMessage.getScore());
+
                 bot.sendGroupMsg(groupId, msg, false);
                 return MESSAGE_BLOCK;
             }

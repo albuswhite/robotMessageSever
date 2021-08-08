@@ -13,12 +13,8 @@ import lombok.NoArgsConstructor;
 public class ScoreRecord {
     @TableField(value = "QQ")
     private String QQ;
-    @TableField(value = "name")
-    private String name;
-    @TableField(value = "level")
-    private String level;
+    @TableField(value = "id")
+    private String id;
     @TableField(value = "score")
-    private long score;
-    @TableField(value = "title")
-    private String title;
+    private int score;
 }
