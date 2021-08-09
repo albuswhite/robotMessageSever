@@ -21,4 +21,6 @@ public class Believer {
     private long score;
     @TableField(value = "title")
     private String title;
+    @TableField(value = "id")
+    private int id;
 }

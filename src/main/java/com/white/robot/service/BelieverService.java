@@ -12,13 +12,10 @@ import java.util.List;
 public class BelieverService extends ServiceImpl<TBelieverMapper, Believer> {
 
 
-    public List<Believer> getKeywordList() {
+    public Believer getByQQ(String QQ) {
         LambdaQueryWrapper<Believer> wrapper =
-                new LambdaQueryWrapper<>();
-        return list(wrapper);
+                new LambdaQueryWrapper<Believer>().eq(Believer::getQQ,QQ);
+        return getOne(wrapper);
     }
 
-    public boolean insertBeliever(Believer believer){
-        return save( believer);
-    }
 }

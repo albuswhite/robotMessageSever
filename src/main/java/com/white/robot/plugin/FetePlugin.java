@@ -15,6 +15,7 @@ import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Calendar;
 import java.util.List;
@@ -45,35 +46,36 @@ public class FetePlugin extends BotPlugin {
         String text = event.getRawMessage();
 
         List<OnebotBase.Message> messageChain = event.getMessageList();
-        if (messageChain.size() > 0) {
-            OnebotBase.Message message = messageChain.get(0);
-            if (message.getType().equals("text")) {
-                String info = message.getDataMap().get("text");
-                if (info.startsWith(" 为日立献礼，我是")) {
-                    info = info.replace(" 为日立献礼，我是", "");
-                    Believer believer = new Believer();
-                    believer.setQQ(String.valueOf(event.getUserId()));
-                    believer.setLevel("浅信徒");
-                    believer.setName(info);
-                    try {
-                        believerService.saveOrUpdate(believer);
-                    } catch (Exception e) {
-                        bot.sendGroupMsg(groupId, "用户名已存在", false);
-                        return MESSAGE_BLOCK;
-                    }
-                    bot.sendGroupMsg(groupId, "恭喜" + info + "，日立神将注视着你前行", false);
+
+        if (text.startsWith("为日立献礼，我是")) {
+            text = text.replace("为日立献礼，我是", "");
+            Believer believer = new Believer();
+            believer.setQQ(String.valueOf(event.getUserId()));
+            believer.setName(text);
+            Believer existBeliever = believerService.getByQQ(String.valueOf(event.getUserId()));
+            if (!ObjectUtils.isEmpty(existBeliever)) {
+                believer.setId(existBeliever.getId());
+                if (text.equals(existBeliever.getName())) {
+                    bot.sendGroupMsg(groupId, "请勿重复注册", false);
                     return MESSAGE_BLOCK;
-
                 }
-
-
+            } else {
+                believer.setLevel("浅信徒");
             }
+            try {
+                believerService.saveOrUpdate(believer);
+            } catch (Exception e) {
+                bot.sendGroupMsg(groupId, "用户名已存在", false);
+                return MESSAGE_BLOCK;
+            }
+            bot.sendGroupMsg(groupId, "恭喜" + text + "，日立神将注视着你前行", false);
+            return MESSAGE_BLOCK;
+
         }
 
 
         if (text.equals("煌煌天日渊渟岳立")) {
             if (userId == 1250473565) {
-
 
                 bot.sendGroupMsg(groupId, "权限验证通过，祭祀模式启动", false);
                 Thread.sleep(1000);
@@ -94,21 +96,21 @@ public class FetePlugin extends BotPlugin {
         }
 
         if (text.equals("日立经")) {
-//        if ((hour != 18) && (hour != 12)) {
-            if ((hour != 22)) {
+        if ((hour != 18) && (hour != 12)) {
+//            if ((hour != 22)) {
                 bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
                 return MESSAGE_BLOCK;
             }
             int level = Lottery(probability);
             FeteMessage feteMessage = feteService.getByLevel(level);
             if (!(feteMessage == null)) {
-                bot.sendGroupMsg(groupId, feteMessage.getResponse(), false);
+                // bot.sendGroupMsg(groupId, feteMessage.getResponse()+"\n", false);
 
                 ScoreRecord scoreRecord = new ScoreRecord();
                 scoreRecord.setQQ(String.valueOf(event.getUserId()));
                 scoreRecord.setScore(feteMessage.getScore());
-                scoreService.save(scoreRecord);
-                Msg msg = Msg.builder().at(event.getUserId()).text("恭喜，获得积分" + feteMessage.getScore());
+                //scoreService.save(scoreRecord);
+                Msg msg = Msg.builder().text(feteMessage.getResponse()+"\n").at(event.getUserId()).text("恭喜，获得积分" + feteMessage.getScore());
 
                 bot.sendGroupMsg(groupId, msg, false);
                 return MESSAGE_BLOCK;

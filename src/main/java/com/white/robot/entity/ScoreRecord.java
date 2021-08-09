@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 public class ScoreRecord {
     @TableField(value = "QQ")
     private String QQ;
-    @TableField(value = "id")
-    private String id;
     @TableField(value = "score")
     private int score;
 }

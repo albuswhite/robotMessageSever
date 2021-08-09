@@ -68,7 +68,7 @@ public class HelloPlugin extends BotPlugin {
 
     @Override
     public int onGroupRecallNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupRecallNoticeEvent event) {
-        Msg msg = Msg.builder().text("怀孕了就直说啊,撤回干什么?大家一起帮你想办法嘛");
+        Msg msg = Msg.builder().text("怀孕了就直说啊，撤回干什么？大家一起帮你想办法嘛");
         bot.sendGroupMsg(event.getGroupId(), msg, false);
         return MESSAGE_BLOCK;
 
