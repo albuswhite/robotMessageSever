@@ -3,6 +3,7 @@ spring:
     plugin-list: # 配置插件列表（有序），如果插件返回0，继续执行剩余插件，如果插件返回1，终止剩余插件执行
       - com.white.robot.plugin.LogPlugin # 日志插件
       - com.white.robot.plugin.HelloPlugin # 测试插件
+      - com.white.robot.plugin.ReminderPlugin
       - com.white.robot.plugin.FetePlugin #祭祀插件
       - com.white.robot.plugin.YellowPlugin #GHS
       - com.white.robot.plugin.FuzzyPlugin # 模糊插件

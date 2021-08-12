@@ -10,7 +10,6 @@ import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import net.lz1998.pbbot.utils.Msg;
-import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -57,6 +57,7 @@ public class FetePlugin extends BotPlugin {
             if (!ObjectUtils.isEmpty(existBeliever)) {
                 believer.setId(existBeliever.getId());
                 believer.setScore(existBeliever.getScore());
+                believer.setDaily(existBeliever.getDaily());
                 if (text.equals(existBeliever.getName())) {
                     bot.sendGroupMsg(groupId, "请勿重复注册", false);
                     return MESSAGE_BLOCK;
@@ -101,10 +102,10 @@ public class FetePlugin extends BotPlugin {
 
         if (text.equals("日立经")) {
 //            if ((hour != 18) && (hour != 12)) {
-            if ((false)) {
-                bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
-                return MESSAGE_BLOCK;
-            }
+//            if ((false)) {
+//                bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
+//                return MESSAGE_BLOCK;
+//            }
 
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
 
@@ -127,9 +128,14 @@ public class FetePlugin extends BotPlugin {
                 scoreRecord.setQQ(String.valueOf(event.getUserId()));
                 scoreRecord.setScore(feteMessage.getScore());
 
+                int score=existBeliever.getScore() + feteMessage.getScore();
+                String levelTitle=this.LevelJudge(score);
+
                 scoreService.save(scoreRecord);
-                existBeliever.setScore(existBeliever.getScore() + feteMessage.getScore());
+
+                existBeliever.setScore(score);
                 existBeliever.setDaily(existBeliever.getDaily() - 1);
+                existBeliever.setLevel(levelTitle);
 
                 Msg msg = Msg.builder().text(feteMessage.getResponse() + "\n").at(event.getUserId())
                         .text("恭喜，获得积分" + feteMessage.getScore() + "\n").text("今日还剩" + existBeliever.getDaily() + "次");
@@ -187,7 +193,40 @@ public class FetePlugin extends BotPlugin {
 
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+
+    public String LevelJudge(int score) {
+        List<String> levelList = Arrays.asList("无神论者", "教徒", "狂热教徒", "圣教徒", "司铎", "大司铎", "主教", "执事主教", "大主教", "红衣主教", "教宗", "神使");
+        int i = -1;
+        if (score < 100) {
+            i = 0;
+        } else if (score < 200) {
+            i = 1;
+        } else if (score < 400) {
+            i = 2;
+        } else if (score < 800) {
+            i = 3;
+        } else if (score < 1600) {
+            i = 4;
+        } else if (score < 3200) {
+            i = 5;
+        } else if (score < 6400) {
+            i = 6;
+        } else if (score < 10000) {
+            i = 7;
+        } else if (score < 20000) {
+            i = 8;
+        } else if (score < 40000) {
+            i = 9;
+        } else if (score < 80000) {
+            i = 10;
+        }
+
+
+        return levelList.get(i);
+    }
+
+
+    @Scheduled(cron = "0 0 0 * * ?")
     public void refresh() {
         believerService.refreshDaily();
     }
