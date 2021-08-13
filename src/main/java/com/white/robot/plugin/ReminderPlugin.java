@@ -53,7 +53,8 @@ public class ReminderPlugin extends BotPlugin {
         String text = event.getRawMessage();
         if (text.startsWith("精致睡眠")) {
             text = text.replace("精致睡眠", "");
-            int hour= text.indexOf(0) * 3600;
+            text = text.replace("h","");
+            int hour= Integer.parseInt(text) * 3600;
 
             bot.setGroupBan(event.getGroupId(),event.getUserId(), hour);
             bot.sendGroupMsg(event.getGroupId(),"日立神赐你安眠",false);
