@@ -25,10 +25,14 @@ public class BelieverService extends ServiceImpl<TBelieverMapper, Believer> {
         return true;
     }
 
-    public List<Believer> getOrder() {
+    public List<Believer> getOrderDesc() {
         LambdaQueryWrapper<Believer> wrapper =
                 new LambdaQueryWrapper<Believer>().orderByDesc(Believer::getScore).last("limit 11");
         return list(wrapper);
     }
-
+    public List<Believer> getOrderAsc() {
+        LambdaQueryWrapper<Believer> wrapper =
+                new LambdaQueryWrapper<Believer>().orderByAsc(Believer::getScore).last("limit 11");
+        return list(wrapper);
+    }
 }

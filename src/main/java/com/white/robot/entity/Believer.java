@@ -18,7 +18,7 @@ public class Believer {
     @TableField(value = "level")
     private String level;
     @TableField(value = "score")
-    private int score;
+    private long score;
     @TableField(value = "title")
     private String title;
     @TableField(value = "id")

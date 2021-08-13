@@ -8,6 +8,7 @@ import com.white.robot.service.FeteService;
 import com.white.robot.service.ScoreService;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
+import net.lz1998.pbbot.bot.BotContainer;
 import net.lz1998.pbbot.bot.BotPlugin;
 import net.lz1998.pbbot.utils.Msg;
 import onebot.OnebotEvent;
@@ -31,6 +32,9 @@ public class FetePlugin extends BotPlugin {
     private FeteService feteService;
     @Autowired
     private ScoreService scoreService;
+
+    @Autowired
+    BotContainer botContainer;
 
 
     @SneakyThrows
@@ -128,7 +132,7 @@ public class FetePlugin extends BotPlugin {
                 scoreRecord.setQQ(String.valueOf(event.getUserId()));
                 scoreRecord.setScore(feteMessage.getScore());
 
-                int score=existBeliever.getScore() + feteMessage.getScore();
+                long score=existBeliever.getScore() + feteMessage.getScore();
                 String levelTitle=this.LevelJudge(score);
 
                 scoreService.save(scoreRecord);
@@ -151,7 +155,7 @@ public class FetePlugin extends BotPlugin {
         if (text.equals("虔诚如我")) {
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
             if (ObjectUtils.isEmpty(existBeliever)) {
-                bot.sendGroupMsg(groupId, "请先注册", false);
+                bot.sendGroupMsg(groupId, "请先注册，注册教程请输入'教程'查看", false);
                 return MESSAGE_BLOCK;
             }
             String title = existBeliever.getTitle() != null ? existBeliever.getTitle() : existBeliever.getLevel();
@@ -163,7 +167,7 @@ public class FetePlugin extends BotPlugin {
 
 
         if (text.equals("哐次哐次，谁是世界上最虔诚的信徒")) {
-            List<Believer> believers = believerService.getOrder();
+            List<Believer> believers = believerService.getOrderDesc();
             Msg msg = Msg.builder().text("今天虔诚的信徒们又在祷告，那么最虔诚的他们是谁呢\n");
             for (int i = 1; i < believers.size(); i++) {
                 msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore() + "\n");
@@ -171,6 +175,18 @@ public class FetePlugin extends BotPlugin {
             bot.sendGroupMsg(groupId, msg, false);
             return MESSAGE_BLOCK;
         }
+
+        if (text.equals("哐次哐次，谁是世界上最惨的信徒")) {
+            List<Believer> believers = believerService.getOrderAsc();
+            Msg msg = Msg.builder().text("今天很惨的信徒们又很惨\n");
+            for (int i = 1; i < believers.size(); i++) {
+                msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore() + "\n");
+            }
+            bot.sendGroupMsg(groupId, msg, false);
+            return MESSAGE_BLOCK;
+        }
+
+
         return MESSAGE_IGNORE;
     }
 
@@ -194,31 +210,31 @@ public class FetePlugin extends BotPlugin {
     }
 
 
-    public String LevelJudge(int score) {
-        List<String> levelList = Arrays.asList("无神论者", "教徒", "狂热教徒", "圣教徒", "司铎", "大司铎", "主教", "执事主教", "大主教", "红衣主教", "教宗", "神使");
-        int i = -1;
+    public String LevelJudge(long score) {
+        List<String> levelList = Arrays.asList("浅信徒", "善男信女", "普通门徒", "坚定信徒", "狂热教徒", "见习司铎", "传教司铎", "大司铎","主教", "大主教", "红衣主教", "教宗","白衣教宗", "神使");
+        int i = 0;
         if (score < 100) {
-            i = 0;
-        } else if (score < 200) {
             i = 1;
-        } else if (score < 400) {
+        } else if (score < 200) {
             i = 2;
-        } else if (score < 800) {
+        } else if (score < 400) {
             i = 3;
-        } else if (score < 1600) {
+        } else if (score < 800) {
             i = 4;
-        } else if (score < 3200) {
+        } else if (score < 1600) {
             i = 5;
-        } else if (score < 6400) {
+        } else if (score < 3200) {
             i = 6;
-        } else if (score < 10000) {
+        } else if (score < 6400) {
             i = 7;
-        } else if (score < 20000) {
+        } else if (score < 10000) {
             i = 8;
-        } else if (score < 40000) {
+        } else if (score < 20000) {
             i = 9;
-        } else if (score < 80000) {
+        } else if (score < 40000) {
             i = 10;
+        } else if (score < 80000) {
+            i = 11;
         }
 
 
