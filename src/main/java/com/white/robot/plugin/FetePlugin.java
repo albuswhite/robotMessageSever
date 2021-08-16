@@ -13,15 +13,14 @@ import net.lz1998.pbbot.bot.BotPlugin;
 import net.lz1998.pbbot.utils.Msg;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Component
 public class FetePlugin extends BotPlugin {
@@ -54,14 +53,17 @@ public class FetePlugin extends BotPlugin {
         // 注册
         if (text.startsWith("为日立献礼，我是")) {
             text = text.replace("为日立献礼，我是", "");
+            if (text.length() > 12 || text.contains("\n")) {
+                bot.sendGroupMsg(groupId, "违规名字，你知不知道你名字取成这样，你爸爸我都不认识你了", false);
+                return MESSAGE_BLOCK;
+            }
             Believer believer = new Believer();
             believer.setQQ(String.valueOf(userId));
             believer.setName(text);
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
             if (!ObjectUtils.isEmpty(existBeliever)) {
-                believer.setId(existBeliever.getId());
-                believer.setScore(existBeliever.getScore());
-                believer.setDaily(existBeliever.getDaily());
+                BeanUtils.copyProperties(existBeliever,believer);
+                believer.setName(text);
                 if (text.equals(existBeliever.getName())) {
                     bot.sendGroupMsg(groupId, "请勿重复注册", false);
                     return MESSAGE_BLOCK;
@@ -114,7 +116,7 @@ public class FetePlugin extends BotPlugin {
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
 
             if (ObjectUtils.isEmpty(existBeliever)) {
-                bot.sendGroupMsg(groupId, "请先注册", false);
+                bot.sendGroupMsg(groupId, "请先注册，注册教程请输入'教程'查看", false);
                 return MESSAGE_BLOCK;
             }
 
@@ -127,17 +129,22 @@ public class FetePlugin extends BotPlugin {
             FeteMessage feteMessage = feteService.getByLevel(level);
             if (!(feteMessage == null)) {
                 // bot.sendGroupMsg(groupId, feteMessage.getResponse()+"\n", false);
-
+                Timestamp nowTime= new Timestamp(new Date().getTime());
                 ScoreRecord scoreRecord = new ScoreRecord();
                 scoreRecord.setQQ(String.valueOf(event.getUserId()));
                 scoreRecord.setScore(feteMessage.getScore());
+                scoreRecord.setCreateTime(nowTime);
 
-                long score=existBeliever.getScore() + feteMessage.getScore();
-                String levelTitle=this.LevelJudge(score);
+                long score = existBeliever.getScore() + feteMessage.getScore();
+                int fre= existBeliever.getFrequency()+1;
+                float avg = (float) score/fre;
+                String levelTitle = this.LevelJudge(score);
 
                 scoreService.save(scoreRecord);
 
                 existBeliever.setScore(score);
+                existBeliever.setFrequency(fre);
+                existBeliever.setAvg(avg);
                 existBeliever.setDaily(existBeliever.getDaily() - 1);
                 existBeliever.setLevel(levelTitle);
 
@@ -167,7 +174,7 @@ public class FetePlugin extends BotPlugin {
 
 
         if (text.equals("哐次哐次，谁是世界上最虔诚的信徒")) {
-            List<Believer> believers = believerService.getOrderDesc();
+            List<Believer> believers = believerService.getOrderByScoreDesc();
             Msg msg = Msg.builder().text("今天虔诚的信徒们又在祷告，那么最虔诚的他们是谁呢\n");
             for (int i = 1; i < believers.size(); i++) {
                 msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore() + "\n");
@@ -177,10 +184,13 @@ public class FetePlugin extends BotPlugin {
         }
 
         if (text.equals("哐次哐次，谁是世界上最惨的信徒")) {
-            List<Believer> believers = believerService.getOrderAsc();
+            List<Believer> believers = believerService.getOrderByAvgAsc();
             Msg msg = Msg.builder().text("今天很惨的信徒们又很惨\n");
             for (int i = 1; i < believers.size(); i++) {
-                msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore() + "\n");
+                msg.text(i + ". ").text( believers.get(i).getName() )
+                        .text( " 积分： " + believers.get(i).getScore())
+                        .text("  次数： "+ believers.get(i).getFrequency())
+                        .text("\n") ;
             }
             bot.sendGroupMsg(groupId, msg, false);
             return MESSAGE_BLOCK;
@@ -211,7 +221,7 @@ public class FetePlugin extends BotPlugin {
 
 
     public String LevelJudge(long score) {
-        List<String> levelList = Arrays.asList("浅信徒", "善男信女", "普通门徒", "坚定信徒", "狂热教徒", "见习司铎", "传教司铎", "大司铎","主教", "大主教", "红衣主教", "教宗","白衣教宗", "神使");
+        List<String> levelList = Arrays.asList("浅信徒", "善男信女", "普通门徒", "坚定信徒", "狂热教徒", "见习司铎", "传教司铎", "大司铎", "主教", "大主教", "红衣主教", "教宗", "白衣教宗", "神使");
         int i = 0;
         if (score < 100) {
             i = 1;

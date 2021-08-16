@@ -53,12 +53,52 @@ public class ReminderPlugin extends BotPlugin {
         String text = event.getRawMessage();
         if (text.startsWith("精致睡眠")) {
             text = text.replace("精致睡眠", "");
-            text = text.replace("h","");
-            int hour= Integer.parseInt(text) * 3600;
+            int time = 0;
+            System.out.println(text);
+            System.out.println(text.split("min")[0]);
+            try {
+            if (text.contains("d")) {
+                int day = Integer.parseInt(text.split("d")[0]) * 3600 * 24;
+                time = time + day;
+                if (text.contains("h")) {
+                    text = text.split("d")[1];
+                    int hour = Integer.parseInt(text.split("h")[0]) * 3600;
+                    time = time + hour;
+                    if (text.contains("min")) {
+                        text = text.split("h")[1];
+                        int min = Integer.parseInt(text.split("min")[0]) * 60;
+                        time = time + min;
+                    }
+                }
+            }
+            if (text.contains("h")) {
+                int hour = Integer.parseInt(text.split("h")[0]) * 3600;
+                time = time + hour;
+                if (text.contains("min")) {
+                    text = text.split("h")[1];
+                    int min = Integer.parseInt(text.split("min")[0]) * 60;
+                    time = time + min;
 
-            bot.setGroupBan(event.getGroupId(),event.getUserId(), hour);
-            bot.sendGroupMsg(event.getGroupId(),"日立神赐你安眠",false);
+                }
 
+
+            }
+            if (text.contains("min")) {
+                int min = Integer.parseInt(text.split("min")[0]) * 60;
+                time = time + min;
+            }
+            if (time != 0) {
+                bot.setGroupBan(event.getGroupId(), event.getUserId(), time);
+                bot.sendGroupMsg(event.getGroupId(), "日立神赐你安眠", false);
+            }
+            return MESSAGE_BLOCK;
+            } catch (Exception e) {
+                Msg msg = Msg.builder().at(event.getUserId())
+                        .text("啊喂，谁又想搞我的机器人，是不是你给我出来，赶紧赔钱知不知道,看我直接就是一个禁言");
+                bot.sendGroupMsg(event.getGroupId(), msg, false);
+                bot.setGroupBan(event.getGroupId(), event.getUserId(), 300);
+                return MESSAGE_BLOCK;
+            }
 
 
         }

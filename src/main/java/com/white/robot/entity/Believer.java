@@ -25,4 +25,8 @@ public class Believer {
     private int id;
     @TableField(value = "daily")
     private  int daily;
+    @TableField(value = "frequency")
+    private  int frequency;
+    @TableField(value = "avg")
+    private  float avg;
 }

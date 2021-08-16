@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @EqualsAndHashCode
 @TableName(value = "scoreRecord", autoResultMap = true)
 @NoArgsConstructor
@@ -15,4 +17,6 @@ public class ScoreRecord {
     private String QQ;
     @TableField(value = "score")
     private int score;
+    @TableField(value = "createTime")
+    private Timestamp createTime;
 }
