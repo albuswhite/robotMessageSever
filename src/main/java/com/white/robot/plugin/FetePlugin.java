@@ -62,7 +62,7 @@ public class FetePlugin extends BotPlugin {
             believer.setName(text);
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
             if (!ObjectUtils.isEmpty(existBeliever)) {
-                BeanUtils.copyProperties(existBeliever,believer);
+                BeanUtils.copyProperties(existBeliever, believer);
                 believer.setName(text);
                 if (text.equals(existBeliever.getName())) {
                     bot.sendGroupMsg(groupId, "请勿重复注册", false);
@@ -107,12 +107,6 @@ public class FetePlugin extends BotPlugin {
 
 
         if (text.equals("日立经")) {
-//            if ((hour != 18) && (hour != 12)) {
-//            if ((false)) {
-//                bot.sendGroupMsg(groupId, "当前非祭祀时间，本月祭祀时间为每日12:00-13:00，18:00-19:00", false);
-//                return MESSAGE_BLOCK;
-//            }
-
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
 
             if (ObjectUtils.isEmpty(existBeliever)) {
@@ -129,15 +123,16 @@ public class FetePlugin extends BotPlugin {
             FeteMessage feteMessage = feteService.getByLevel(level);
             if (!(feteMessage == null)) {
                 // bot.sendGroupMsg(groupId, feteMessage.getResponse()+"\n", false);
-                Timestamp nowTime= new Timestamp(new Date().getTime());
+                Timestamp nowTime = new Timestamp(new Date().getTime());
                 ScoreRecord scoreRecord = new ScoreRecord();
                 scoreRecord.setQQ(String.valueOf(event.getUserId()));
                 scoreRecord.setScore(feteMessage.getScore());
                 scoreRecord.setCreateTime(nowTime);
 
                 long score = existBeliever.getScore() + feteMessage.getScore();
-                int fre= existBeliever.getFrequency()+1;
-                float avg = (float) score/fre;
+                int dailyScore = feteMessage.getScore() + existBeliever.getDailyScore();
+                int fre = existBeliever.getFrequency() + 1;
+                float avg = (float) score / fre;
                 String levelTitle = this.LevelJudge(score);
 
                 scoreService.save(scoreRecord);
@@ -147,6 +142,7 @@ public class FetePlugin extends BotPlugin {
                 existBeliever.setAvg(avg);
                 existBeliever.setDaily(existBeliever.getDaily() - 1);
                 existBeliever.setLevel(levelTitle);
+                existBeliever.setDailyScore(dailyScore);
 
                 Msg msg = Msg.builder().text(feteMessage.getResponse() + "\n").at(event.getUserId())
                         .text("恭喜，获得积分" + feteMessage.getScore() + "\n").text("今日还剩" + existBeliever.getDaily() + "次");
@@ -169,6 +165,29 @@ public class FetePlugin extends BotPlugin {
             Msg msg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你目前的积分是" + existBeliever.getScore() + "\n")
                     .text("你目前的等级是" + title);
             bot.sendGroupMsg(groupId, msg, false);
+            if (existBeliever.getDaily() == 0) {
+
+                if (existBeliever.getDailyScore() == 15) {
+                    Msg dailyMsg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你今天的积分是" + existBeliever.getDailyScore() + "\n")
+                            .text("你的太可怜了，日立神都看不下去了，触发扶贫机制，次数加二");
+                    existBeliever.setDaily(existBeliever.getDaily() + 2);
+                    bot.sendGroupMsg(groupId, dailyMsg, false);
+                    believerService.saveOrUpdate(existBeliever);
+                    return MESSAGE_BLOCK;
+                }
+
+
+                if (existBeliever.getDailyScore() < 75) {
+                    Msg dailyMsg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你今天的积分是" + existBeliever.getDailyScore() + "\n")
+                            .text("日立神可怜每一个非洲难民，触发扶贫机制，次数加一");
+                    existBeliever.setDaily(existBeliever.getDaily() + 1);
+                    bot.sendGroupMsg(groupId, dailyMsg, false);
+                    believerService.saveOrUpdate(existBeliever);
+                    return MESSAGE_BLOCK;
+                }
+
+            }
+
             return MESSAGE_BLOCK;
         }
 
@@ -187,10 +206,10 @@ public class FetePlugin extends BotPlugin {
             List<Believer> believers = believerService.getOrderByAvgAsc();
             Msg msg = Msg.builder().text("今天很惨的信徒们又很惨\n");
             for (int i = 1; i < believers.size(); i++) {
-                msg.text(i + ". ").text( believers.get(i).getName() )
-                        .text( " 积分： " + believers.get(i).getScore())
-                        .text("  次数： "+ believers.get(i).getFrequency())
-                        .text("\n") ;
+                msg.text(i + ". ").text(believers.get(i).getName())
+                        .text(" 积分： " + believers.get(i).getScore())
+                        .text("  次数： " + believers.get(i).getFrequency())
+                        .text("\n");
             }
             bot.sendGroupMsg(groupId, msg, false);
             return MESSAGE_BLOCK;

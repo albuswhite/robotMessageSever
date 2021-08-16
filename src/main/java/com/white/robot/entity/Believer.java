@@ -24,9 +24,11 @@ public class Believer {
     @TableField(value = "id")
     private int id;
     @TableField(value = "daily")
-    private  int daily;
+    private int daily;
     @TableField(value = "frequency")
-    private  int frequency;
+    private int frequency;
     @TableField(value = "avg")
-    private  float avg;
+    private float avg;
+    @TableField(value = "dailyScore")
+    private int dailyScore;
 }

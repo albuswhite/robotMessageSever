@@ -20,7 +20,7 @@ public class BelieverService extends ServiceImpl<TBelieverMapper, Believer> {
     }
 
     public boolean refreshDaily() {
-        UpdateWrapper<Believer> wrapper = new UpdateWrapper<Believer>().set("daily", 3);
+        UpdateWrapper<Believer> wrapper = new UpdateWrapper<Believer>().set("daily", 3).set("dailyScore",0);
         baseMapper.update(null, wrapper);
         return true;
     }
