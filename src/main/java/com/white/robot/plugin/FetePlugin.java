@@ -169,8 +169,9 @@ public class FetePlugin extends BotPlugin {
 
                 if (existBeliever.getDailyScore() == 15) {
                     Msg dailyMsg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你今天的积分是" + existBeliever.getDailyScore() + "\n")
-                            .text("你的太可怜了，日立神都看不下去了，触发扶贫机制，次数加二");
+                            .text("你真的太可怜了，日立神都看不下去了，触发扶贫机制，次数加二");
                     existBeliever.setDaily(existBeliever.getDaily() + 2);
+                    existBeliever.setDailyScore(75);
                     bot.sendGroupMsg(groupId, dailyMsg, false);
                     believerService.saveOrUpdate(existBeliever);
                     return MESSAGE_BLOCK;
@@ -181,6 +182,7 @@ public class FetePlugin extends BotPlugin {
                     Msg dailyMsg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你今天的积分是" + existBeliever.getDailyScore() + "\n")
                             .text("日立神可怜每一个非洲难民，触发扶贫机制，次数加一");
                     existBeliever.setDaily(existBeliever.getDaily() + 1);
+                    existBeliever.setDailyScore(75);
                     bot.sendGroupMsg(groupId, dailyMsg, false);
                     believerService.saveOrUpdate(existBeliever);
                     return MESSAGE_BLOCK;

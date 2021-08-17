@@ -37,7 +37,7 @@ public class BelieverService extends ServiceImpl<TBelieverMapper, Believer> {
     }
     public List<Believer> getOrderByAvgAsc() {
         LambdaQueryWrapper<Believer> wrapper =
-                new LambdaQueryWrapper<Believer>().orderByAsc(Believer::getAvg).last("limit 11");
+                new LambdaQueryWrapper<Believer>().orderByAsc(Believer::getAvg).gt(Believer::getFrequency,10).last("limit 11");
         return list(wrapper);
     }
 }
