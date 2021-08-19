@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class FeteMessage {
     @TableField(value = "id")
-    private String id;
+    private int id;
     @TableField(value = "keyword")
     private String keyword;
     @TableField(value = "response")
@@ -21,4 +21,6 @@ public class FeteMessage {
     private int level;
     @TableField(value = "score")
     private int score;
+    @TableField(value = "store")
+    private int store;
 }

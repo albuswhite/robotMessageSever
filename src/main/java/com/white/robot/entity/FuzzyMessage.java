@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class FuzzyMessage {
     @TableField(value = "id")
-    private String id;
+    private int id;
     @TableField(value = "keyword")
     private String keyword;
     @TableField(value = "response")

@@ -19,8 +19,8 @@ public class BelieverService extends ServiceImpl<TBelieverMapper, Believer> {
         return getOne(wrapper);
     }
 
-    public boolean refreshDaily() {
-        UpdateWrapper<Believer> wrapper = new UpdateWrapper<Believer>().set("daily", 3).set("dailyScore",0);
+    public boolean refreshDaily(String QQ, int fixedTime) {
+        UpdateWrapper<Believer> wrapper = new UpdateWrapper<Believer>().set("daily",fixedTime).set("dailyScore",0).eq("QQ",QQ);
         baseMapper.update(null, wrapper);
         return true;
     }
@@ -30,6 +30,15 @@ public class BelieverService extends ServiceImpl<TBelieverMapper, Believer> {
                 new LambdaQueryWrapper<Believer>().orderByDesc(Believer::getScore).last("limit 11");
         return list(wrapper);
     }
+    public List<Believer> getList() {
+        LambdaQueryWrapper<Believer> wrapper =
+                new LambdaQueryWrapper<>();
+        return list(wrapper);
+    }
+
+
+
+
     public List<Believer> getOrderByScoreAsc() {
         LambdaQueryWrapper<Believer> wrapper =
                 new LambdaQueryWrapper<Believer>().orderByAsc(Believer::getScore).last("limit 11");

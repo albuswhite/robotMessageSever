@@ -3,6 +3,7 @@ package com.white.robot.plugin;
 import com.white.robot.entity.FuzzyMessage;
 import com.white.robot.service.FuzzyService;
 import com.white.robot.warehouse.FuzzyEnum;
+import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import onebot.OnebotEvent;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+@Slf4j
 @Component
 public class FuzzyPlugin extends BotPlugin {
 

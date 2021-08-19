@@ -31,4 +31,6 @@ public class Believer {
     private float avg;
     @TableField(value = "dailyScore")
     private int dailyScore;
+    @TableField(value = "fixedTime")
+    private int fixedTime;
 }
