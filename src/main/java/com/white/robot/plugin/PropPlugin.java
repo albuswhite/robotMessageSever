@@ -12,11 +12,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class PropPlugin extends BotPlugin {
 
+
     @SneakyThrows
     @Override
     public int onGroupMessage(@NotNull Bot bot, @NotNull OnebotEvent.GroupMessageEvent event) {
 
+        long groupId = event.getGroupId();
+        long userId = event.getUserId();
 
+        String text = event.getRawMessage();
+
+        // 注册
+        if (text.startsWith("查看背包")) {
+
+            
+        }
         return MESSAGE_IGNORE;
 
     }

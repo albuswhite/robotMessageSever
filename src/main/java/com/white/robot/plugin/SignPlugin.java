@@ -21,7 +21,6 @@ import org.springframework.util.ObjectUtils;
 import java.util.Calendar;
 
 
-
 @Slf4j
 @Component
 public class SignPlugin extends BotPlugin {
@@ -29,7 +28,6 @@ public class SignPlugin extends BotPlugin {
     private FeteService feteService;
     @Autowired
     private SignService signService;
-
     @Autowired
     private RiLiLearningService riLiLearningService;
 
@@ -68,9 +66,19 @@ public class SignPlugin extends BotPlugin {
                 signRecord.setUpdateTime(TimeUtil.getNowTimestamp());
                 signRecord.setDailySign(true);
                 RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
-                int debris=signRecord.getDebris()+fixedAward+riLiLearning.getSpeakCount();
-                signRecord.setDebris(debris);
-                Msg msg =Msg.builder().at(userId).text("签到成功,").text("获得碎片:").text(String.valueOf(debris));
+                Msg msg = Msg.builder().at(userId).text("签到成功,");
+                int debris;
+                if (riLiLearning.getLearn()) {
+                    debris = fixedAward + riLiLearning.getSpeakCount();
+                } else {
+                    debris = fixedAward - riLiLearning.getSpeakCount();
+                }
+                if (debris <0) {
+                    debris =0;
+                    msg.text("日立昨天没学习不倒扣就不错了哦");
+                }
+                signRecord.setDebris(signRecord.getDebris()+debris);
+                msg.text("获得碎片:").text(String.valueOf(debris));
                 bot.sendGroupMsg(groupId, msg, false);
                 signService.saveOrUpdate(signRecord);
             }

@@ -3,9 +3,11 @@ package com.white.robot.plugin;
 import com.white.robot.Util.TimeUtil;
 import com.white.robot.entity.Believer;
 import com.white.robot.entity.FeteMessage;
+import com.white.robot.entity.RiLiLearning;
 import com.white.robot.entity.ScoreRecord;
 import com.white.robot.service.BelieverService;
 import com.white.robot.service.FeteService;
+import com.white.robot.service.RiLiLearningService;
 import com.white.robot.service.ScoreService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +23,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Component
@@ -34,9 +37,13 @@ public class FetePlugin extends BotPlugin {
     private FeteService feteService;
     @Autowired
     private ScoreService scoreService;
+    @Autowired
+    private RiLiLearningService riLiLearningService;
 
     @Autowired
     BotContainer botContainer;
+
+
 
 
     @SneakyThrows
@@ -253,9 +260,15 @@ public class FetePlugin extends BotPlugin {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void refresh() {
+        RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
         for (Believer believer : believerService.getList())
-            believerService.refreshDaily(believer.getQQ(), believer.getFixedTime());
+            if (riLiLearning.getLearn()) {
+                believerService.refreshDaily(believer.getQQ(), believer.getFixedTime());
+            } else {
+                believerService.refreshDaily(believer.getQQ(), believer.getFixedTime()-1);
+            }
     }
+
 
 
 }
