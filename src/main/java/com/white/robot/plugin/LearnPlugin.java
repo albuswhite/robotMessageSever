@@ -82,7 +82,7 @@ public class LearnPlugin extends BotPlugin {
         riLiLearningService.saveOrUpdate(riLiLearning);
     }
 
-    @Scheduled(cron = "0 0 12，16，18，20，22，23 * * ?")
+    @Scheduled(cron = "0 0 12,16,18,20,22,23 * * ?")
     public void reminder() {
         Map<Long, Bot> allBots = botContainer.getBots();
         Bot bot = allBots.get(botId);

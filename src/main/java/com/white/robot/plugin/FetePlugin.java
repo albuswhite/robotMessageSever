@@ -1,14 +1,9 @@
 package com.white.robot.plugin;
 
+import com.white.robot.Util.InitialUtil;
 import com.white.robot.Util.TimeUtil;
-import com.white.robot.entity.Believer;
-import com.white.robot.entity.FeteMessage;
-import com.white.robot.entity.RiLiLearning;
-import com.white.robot.entity.ScoreRecord;
-import com.white.robot.service.BelieverService;
-import com.white.robot.service.FeteService;
-import com.white.robot.service.RiLiLearningService;
-import com.white.robot.service.ScoreService;
+import com.white.robot.entity.*;
+import com.white.robot.service.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
@@ -39,6 +34,10 @@ public class FetePlugin extends BotPlugin {
     private ScoreService scoreService;
     @Autowired
     private RiLiLearningService riLiLearningService;
+    @Autowired
+    private SignService signService;
+    @Autowired
+    private PropService propService;
 
     @Autowired
     BotContainer botContainer;
@@ -53,6 +52,7 @@ public class FetePlugin extends BotPlugin {
 
         long groupId = event.getGroupId();
         long userId = event.getUserId();
+        String QQ =String.valueOf(userId);
 
         String text = event.getRawMessage();
 
@@ -64,9 +64,7 @@ public class FetePlugin extends BotPlugin {
                 return MESSAGE_BLOCK;
             }
             Believer believer = new Believer();
-            believer.setQQ(String.valueOf(userId));
-            believer.setName(text);
-            Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
+            Believer existBeliever = believerService.getByQQ(QQ);
             if (!ObjectUtils.isEmpty(existBeliever)) {
                 BeanUtils.copyProperties(existBeliever, believer);
                 believer.setName(text);
@@ -76,9 +74,17 @@ public class FetePlugin extends BotPlugin {
                     return MESSAGE_BLOCK;
                 }
             } else {
+                believer.setQQ(String.valueOf(userId));
+                believer.setName(text);
                 believer.setLevel("浅信徒");
                 believer.setDaily(3);
                 believer.setFixedTime(3);
+
+                SignRecord signRecord = InitialUtil.newSignRecord(QQ);
+                signService.save(signRecord);
+                Prop prop =InitialUtil.newProp(QQ);
+                propService.save(prop);
+
             }
             try {
                 believerService.saveOrUpdate(believer);
@@ -152,7 +158,7 @@ public class FetePlugin extends BotPlugin {
             bot.sendGroupMsg(groupId, msg, false);
             if (existBeliever.getDaily() == 0) {
 
-                if (existBeliever.getDailyScore() == 15) {
+                if (existBeliever.getDailyScore() <= 15) {
                     Msg dailyMsg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你今天的积分是" + existBeliever.getDailyScore() + "\n")
                             .text("你真的太可怜了，日立神都看不下去了，触发扶贫机制，次数加二");
                     existBeliever.setDaily(existBeliever.getDaily() + 2);
@@ -192,11 +198,9 @@ public class FetePlugin extends BotPlugin {
         if (text.equals("哐次哐次，谁是世界上最惨的信徒")) {
             List<Believer> believers = believerService.getOrderByAvgAsc();
             Msg msg = Msg.builder().text("今天很惨的信徒们又很惨\n");
-            for (int i = 1; i < believers.size(); i++) {
-                msg.text(i + ". ").text(believers.get(i).getName())
-                        .text(" 积分： " + believers.get(i).getScore())
-                        .text("  次数： " + believers.get(i).getFrequency())
-                        .text("\n");
+            for (int i = 0; i < believers.size(); i++) {
+                msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore())
+                        .text("  次数： " + believers.get(i).getFrequency()+"\n");
             }
             bot.sendGroupMsg(groupId, msg, false);
             return MESSAGE_BLOCK;

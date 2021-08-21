@@ -2,6 +2,7 @@ package com.white.robot.plugin;
 
 import com.white.robot.Util.TimeUtil;
 import com.white.robot.entity.FeteMessage;
+import com.white.robot.entity.Prop;
 import com.white.robot.entity.RiLiLearning;
 import com.white.robot.entity.SignRecord;
 import com.white.robot.service.*;
@@ -30,6 +31,8 @@ public class SignPlugin extends BotPlugin {
     private SignService signService;
     @Autowired
     private RiLiLearningService riLiLearningService;
+    @Autowired
+    private PropService propService;
 
     @Autowired
     BotContainer botContainer;
@@ -45,12 +48,12 @@ public class SignPlugin extends BotPlugin {
 
         long groupId = event.getGroupId();
         long userId = event.getUserId();
+        String QQ =String.valueOf(userId);
 
         String text = event.getRawMessage();
 
-        FeteMessage feteMessage = feteService.getById(6);
         if (text.equals("赞美日立")) {
-            SignRecord signRecord = signService.getByQQ(String.valueOf(userId));
+            SignRecord signRecord = signService.getByQQ(QQ);
             if (ObjectUtils.isEmpty(signRecord)) {
                 bot.sendGroupMsg(groupId, "请先注册，注册教程请输入'教程'查看", false);
                 return MESSAGE_BLOCK;
@@ -66,6 +69,7 @@ public class SignPlugin extends BotPlugin {
                 signRecord.setUpdateTime(TimeUtil.getNowTimestamp());
                 signRecord.setDailySign(true);
                 RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
+                Prop prop =propService.getByQQ(QQ);
                 Msg msg = Msg.builder().at(userId).text("签到成功,");
                 int debris;
                 if (riLiLearning.getLearn()) {
@@ -75,12 +79,13 @@ public class SignPlugin extends BotPlugin {
                 }
                 if (debris <0) {
                     debris =0;
-                    msg.text("日立昨天没学习不倒扣就不错了哦");
+                    msg.text("日立昨天没学习不倒扣就不错了哦\n");
                 }
-                signRecord.setDebris(signRecord.getDebris()+debris);
+                prop.setDebris(prop.getDebris()+debris);
                 msg.text("获得碎片:").text(String.valueOf(debris));
                 bot.sendGroupMsg(groupId, msg, false);
                 signService.saveOrUpdate(signRecord);
+                propService.saveOrUpdate(prop);
             }
             return MESSAGE_BLOCK;
 

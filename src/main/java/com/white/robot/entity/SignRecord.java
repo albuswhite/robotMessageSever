@@ -17,9 +17,6 @@ public class SignRecord {
     private String QQ;
     @TableField(value = "dailySign")
     private boolean dailySign;
-
-    @TableField(value = "debris")
-    private int debris;
     @TableField(value = "totalSign")
     private int totalSign;
     @TableField(value = "id")
