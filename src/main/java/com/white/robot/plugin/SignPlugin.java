@@ -26,8 +26,6 @@ import java.util.Calendar;
 @Component
 public class SignPlugin extends BotPlugin {
     @Autowired
-    private FeteService feteService;
-    @Autowired
     private SignService signService;
     @Autowired
     private RiLiLearningService riLiLearningService;
@@ -60,33 +58,33 @@ public class SignPlugin extends BotPlugin {
             }
 
 
-            if (signRecord.isDailySign()) {
-                bot.sendGroupMsg(groupId, "求求了别重复签到", false);
-
-            } else {
-
-                signRecord.setTotalSign(signRecord.getTotalSign() + 1);
-                signRecord.setUpdateTime(TimeUtil.getNowTimestamp());
-                signRecord.setDailySign(true);
-                RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
-                Prop prop =propService.getByQQ(QQ);
-                Msg msg = Msg.builder().at(userId).text("签到成功,");
-                int debris;
-                if (riLiLearning.getLearn()) {
-                    debris = fixedAward + riLiLearning.getSpeakCount();
-                } else {
-                    debris = fixedAward - riLiLearning.getSpeakCount();
-                }
-                if (debris <0) {
-                    debris =0;
-                    msg.text("日立昨天没学习不倒扣就不错了哦\n");
-                }
-                prop.setDebris(prop.getDebris()+debris);
-                msg.text("获得碎片:").text(String.valueOf(debris));
-                bot.sendGroupMsg(groupId, msg, false);
-                signService.saveOrUpdate(signRecord);
-                propService.saveOrUpdate(prop);
-            }
+//            if (signRecord.isDailySign()) {
+//                bot.sendGroupMsg(groupId, "求求了别重复签到", false);
+//
+//            } else {
+//
+//                signRecord.setTotalSign(signRecord.getTotalSign() + 1);
+//                signRecord.setUpdateTime(TimeUtil.getNowTimestamp());
+//                signRecord.setDailySign(true);
+//                RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
+//                Prop prop =propService.getByQQ(QQ);
+//                Msg msg = Msg.builder().at(userId).text("签到成功,");
+//                int debris;
+//                if (riLiLearning.getLearn()) {
+//                    debris = fixedAward + riLiLearning.getSpeakCount();
+//                } else {
+//                    debris = fixedAward - riLiLearning.getSpeakCount();
+//                }
+//                if (debris <0) {
+//                    debris =0;
+//                    msg.text("日立昨天没学习不倒扣就不错了哦\n");
+//                }
+//                prop.setDebris(prop.getDebris()+debris);
+//                msg.text("获得碎片:").text(String.valueOf(debris));
+//                bot.sendGroupMsg(groupId, msg, false);
+//                signService.saveOrUpdate(signRecord);
+//                propService.saveOrUpdate(prop);
+//            }
             return MESSAGE_BLOCK;
 
 
@@ -122,7 +120,7 @@ public class SignPlugin extends BotPlugin {
 
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void refresh() {
         signService.refreshDaily();
     }

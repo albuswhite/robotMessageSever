@@ -16,12 +16,8 @@ public class Prop {
     private int id;
     @TableField(value = "QQ")
     private String QQ;
-    @TableField(value = "protectStatus")
-    private int protectStatus;
     @TableField(value = "protectDuration")
     private int protectDuration;
-    @TableField(value = "buffStatus")
-    private int buffStatus;
     @TableField(value = "buffDuration")
     private int buffDuration;
     @TableField(value = "debris")
@@ -36,5 +32,7 @@ public class Prop {
     private int duelCard;
     @TableField(value = "wipeCard")
     private int wipeCard;
+    @TableField(value = "propCard")
+    private int propCard;
 }
 

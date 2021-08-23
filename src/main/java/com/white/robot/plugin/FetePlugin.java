@@ -43,8 +43,6 @@ public class FetePlugin extends BotPlugin {
     BotContainer botContainer;
 
 
-
-
     @SneakyThrows
     @Override
     public int onGroupMessage(@NotNull Bot bot, @NotNull OnebotEvent.GroupMessageEvent event) {
@@ -52,8 +50,8 @@ public class FetePlugin extends BotPlugin {
 
         long groupId = event.getGroupId();
         long userId = event.getUserId();
-        String QQ =String.valueOf(userId);
-
+        String QQ = String.valueOf(userId);
+        Msg msg = Msg.builder();
         String text = event.getRawMessage();
 
         // 注册
@@ -82,7 +80,7 @@ public class FetePlugin extends BotPlugin {
 
                 SignRecord signRecord = InitialUtil.newSignRecord(QQ);
                 signService.save(signRecord);
-                Prop prop =InitialUtil.newProp(QQ);
+                Prop prop = InitialUtil.newProp(QQ);
                 propService.save(prop);
 
             }
@@ -102,6 +100,7 @@ public class FetePlugin extends BotPlugin {
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
 
             if (ObjectUtils.isEmpty(existBeliever)) {
+
                 bot.sendGroupMsg(groupId, "请先注册，注册教程请输入'教程'查看", false);
                 return MESSAGE_BLOCK;
             }
@@ -122,20 +121,34 @@ public class FetePlugin extends BotPlugin {
 
                 long score = existBeliever.getScore() + feteMessage.getScore();
                 int dailyScore = feteMessage.getScore() + existBeliever.getDailyScore();
+                int daily = existBeliever.getDaily() - 1;
                 int fre = existBeliever.getFrequency() + 1;
                 float avg = (float) score / fre;
                 String levelTitle = this.LevelJudge(score);
+
+
+//                if (daily == 0) {
+//                    Prop prop = propService.getByQQ(QQ);
+//                    if (prop.getBuffDuration() > 0) {
+//                        score = score + dailyScore * prop.getBuffDuration();
+//                        dailyScore = dailyScore * (1 + prop.getBuffDuration());
+//                        prop.setBuffDuration(0);
+//                        msg.text("触发翻倍卡");
+//                    }
+//                }
+
 
                 scoreService.save(scoreRecord);
 
                 existBeliever.setScore(score);
                 existBeliever.setFrequency(fre);
                 existBeliever.setAvg(avg);
-                existBeliever.setDaily(existBeliever.getDaily() - 1);
+                existBeliever.setDaily(daily);
                 existBeliever.setLevel(levelTitle);
                 existBeliever.setDailyScore(dailyScore);
 
-                Msg msg = Msg.builder().text(feteMessage.getResponse() + "\n").at(event.getUserId())
+
+                msg.text(feteMessage.getResponse() + "\n").at(event.getUserId())
                         .text("恭喜，获得积分" + feteMessage.getScore() + "\n").text("今日还剩" + existBeliever.getDaily() + "次");
 
 
@@ -148,16 +161,43 @@ public class FetePlugin extends BotPlugin {
 
         if (text.equals("虔诚如我")) {
             Believer existBeliever = believerService.getByQQ(String.valueOf(userId));
+            SignRecord signRecord = signService.getByQQ(QQ);
             if (ObjectUtils.isEmpty(existBeliever)) {
                 bot.sendGroupMsg(groupId, "请先注册，注册教程请输入'教程'查看", false);
                 return MESSAGE_BLOCK;
             }
             String title = existBeliever.getTitle() != null ? existBeliever.getTitle() : existBeliever.getLevel();
-            Msg msg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你目前的积分是" + existBeliever.getScore() + "\n")
-                    .text("你目前的等级是" + title);
-            bot.sendGroupMsg(groupId, msg, false);
-            if (existBeliever.getDaily() == 0) {
+            msg.at(userId).text("\n" + existBeliever.getName()).text("你目前的积分是" + existBeliever.getScore() + "\n")
+                    .text("你目前的等级是 " + title + " 你目前的固定抽卡次数是" + existBeliever.getFixedTime() + "\n");
+            if (!signRecord.isDailySign()) {
 
+                signRecord.setTotalSign(signRecord.getTotalSign() + 1);
+                signRecord.setUpdateTime(TimeUtil.getNowTimestamp());
+                signRecord.setDailySign(true);
+                RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
+                Prop prop = propService.getByQQ(QQ);
+                msg.text("签到成功,");
+                int debris;
+                if (riLiLearning.getLearn()) {
+                    debris = 200 + riLiLearning.getSpeakCount();
+                } else {
+                    debris = 200 - riLiLearning.getSpeakCount();
+                }
+                if (debris < 0) {
+                    debris = 0;
+                    msg.text("日立昨天没学习不倒扣就不错了哦\n");
+                }
+                prop.setDebris(prop.getDebris() + debris);
+                msg.text("获得碎片:").text(String.valueOf(debris));
+                bot.sendGroupMsg(groupId, msg, false);
+                signService.saveOrUpdate(signRecord);
+                propService.saveOrUpdate(prop);
+            }
+
+
+            bot.sendGroupMsg(groupId, msg, false);
+
+            if (existBeliever.getDaily() == 0) {
                 if (existBeliever.getDailyScore() <= 15) {
                     Msg dailyMsg = Msg.builder().at(userId).text("\n" + existBeliever.getName()).text("你今天的积分是" + existBeliever.getDailyScore() + "\n")
                             .text("你真的太可怜了，日立神都看不下去了，触发扶贫机制，次数加二");
@@ -187,7 +227,7 @@ public class FetePlugin extends BotPlugin {
 
         if (text.equals("哐次哐次，谁是世界上最虔诚的信徒")) {
             List<Believer> believers = believerService.getOrderByScoreDesc();
-            Msg msg = Msg.builder().text("今天虔诚的信徒们又在祷告，那么最虔诚的他们是谁呢\n");
+            msg.text("今天虔诚的信徒们又在祷告，那么最虔诚的他们是谁呢\n");
             for (int i = 1; i < believers.size(); i++) {
                 msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore() + "\n");
             }
@@ -197,10 +237,12 @@ public class FetePlugin extends BotPlugin {
 
         if (text.equals("哐次哐次，谁是世界上最惨的信徒")) {
             List<Believer> believers = believerService.getOrderByAvgAsc();
-            Msg msg = Msg.builder().text("今天很惨的信徒们又很惨\n");
+            msg.text("今天很惨的信徒们又很惨\n");
+            int seq;
             for (int i = 0; i < believers.size(); i++) {
-                msg.text(i + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore())
-                        .text("  次数： " + believers.get(i).getFrequency()+"\n");
+                seq = i + 1;
+                msg.text(seq + ". " + believers.get(i).getName() + " 积分 " + believers.get(i).getScore())
+                        .text("  次数： " + believers.get(i).getFrequency() + "\n");
             }
             bot.sendGroupMsg(groupId, msg, false);
             return MESSAGE_BLOCK;
@@ -262,17 +304,17 @@ public class FetePlugin extends BotPlugin {
     }
 
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void refresh() {
+        signService.refreshDaily();
         RiLiLearning riLiLearning = riLiLearningService.getByDate(TimeUtil.getLastToday());
         for (Believer believer : believerService.getList())
             if (riLiLearning.getLearn()) {
                 believerService.refreshDaily(believer.getQQ(), believer.getFixedTime());
             } else {
-                believerService.refreshDaily(believer.getQQ(), believer.getFixedTime()-1);
+                believerService.refreshDaily(believer.getQQ(), believer.getFixedTime() - 1);
             }
     }
-
 
 
 }
