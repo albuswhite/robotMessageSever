@@ -6,6 +6,8 @@ import com.white.robot.entity.FeteMessage;
 import com.white.robot.mapper.TFeteMessageMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FeteService extends ServiceImpl<TFeteMessageMapper, FeteMessage> {
     public FeteMessage getByLevel(int level) {
@@ -13,5 +15,10 @@ public class FeteService extends ServiceImpl<TFeteMessageMapper, FeteMessage> {
                 new LambdaQueryWrapper<FeteMessage>()
                         .eq(FeteMessage::getLevel, level);
         return getOne(wrapper);
+    }
+    public List<FeteMessage> getList() {
+        LambdaQueryWrapper<FeteMessage> wrapper =
+                new LambdaQueryWrapper<>();
+        return list(wrapper);
     }
 }

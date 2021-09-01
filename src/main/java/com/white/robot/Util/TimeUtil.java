@@ -34,9 +34,26 @@ public class TimeUtil {
         return getYear() + String.valueOf(getMonth()) + getDay();
     }
 
+    public static boolean monthJudge(int month) {
+        return month == 1 || month == 3 || month == 5
+                || month == 7 || month == 8 || month == 10 || month == 12;
+    }
+
     public static String getLastToday() {
-        String last = String.valueOf(getDay() - 1);
-        return getYear() + String.valueOf(getMonth()) + last;
+
+        String month = String.valueOf(getMonth());
+        String last="1";
+        if (getDay() != 1) {
+            last = String.valueOf(getDay() - 1);
+        } else if (getDay() == 1 && monthJudge(getMonth())) {
+            last = "31";
+            month = String.valueOf(getMonth() - 1);
+        }
+        else if (getDay() == 1 && !monthJudge(getMonth())) {
+            last = "30";
+            month = String.valueOf(getMonth() - 1);
+        }
+        return getYear() + month + last;
     }
 
     public static Timestamp getNowTimestamp() {

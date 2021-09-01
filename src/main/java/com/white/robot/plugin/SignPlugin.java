@@ -120,10 +120,10 @@ public class SignPlugin extends BotPlugin {
 
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
-    public void refresh() {
-        signService.refreshDaily();
-    }
+//    @Scheduled(cron = "0 0 1 * * ?")
+//    public void refresh() {
+//        signService.refreshDaily();
+//    }
 
 
 }
