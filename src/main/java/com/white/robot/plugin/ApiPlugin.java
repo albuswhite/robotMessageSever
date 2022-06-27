@@ -33,7 +33,7 @@ public class ApiPlugin extends BotPlugin {
 
             String result =restTemplate.getForObject(url,String.class);
 
-            bot.sendGroupMsg(groupId, "result", false);
+            bot.sendGroupMsg(groupId, result, false);
             return MESSAGE_BLOCK;
         }
         if (text.equals("土味情话")) {
@@ -42,7 +42,7 @@ public class ApiPlugin extends BotPlugin {
 
             String result =restTemplate.getForObject(url,String.class);
 
-            bot.sendGroupMsg(groupId, "result", false);
+            bot.sendGroupMsg(groupId, result, false);
             return MESSAGE_BLOCK;
         }
 
