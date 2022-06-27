@@ -161,8 +161,8 @@ public class FetePlugin extends BotPlugin {
                 }
 
             }
-            if (sco <= 125) {
-                if (sco <= 25) {
+            if (existBeliever.getDailyScore()+ sco <= 125) {
+                if (existBeliever.getDailyScore()+ sco <= 25) {
                     msg.text("\n你真的太可怜了，日立神都看不下去了，触发扶贫机制，次数加二" +
                             "\n");
                     pic = 2;
@@ -224,7 +224,7 @@ public class FetePlugin extends BotPlugin {
             String title = existBeliever.getTitle() != null ? existBeliever.getTitle() : existBeliever.getLevel();
             msg.at(userId).text("\n" + existBeliever.getName()).text("你目前的积分是" + existBeliever.getScore() + "\n")
                     .text("你目前的等级是 " + title + " 你目前的固定抽卡次数是" + existBeliever.getFixedTime());
-            int debris = 0;
+            int debris;
             if (!signRecord.isDailySign()) {
                 signRecord.setTotalSign(signRecord.getTotalSign() + 1);
                 signRecord.setUpdateTime(TimeUtil.getNowTimestamp());
@@ -234,9 +234,9 @@ public class FetePlugin extends BotPlugin {
                 msg.text("\n" + "签到成功,");
 
                 if (riLiLearning.getLearn()) {
-                    debris = 200 + riLiLearning.getSpeakCount();
+                    debris = 300 + riLiLearning.getSpeakCount();
                 } else {
-                    debris = 200 - riLiLearning.getSpeakCount();
+                    debris = 300 - riLiLearning.getSpeakCount();
                 }
                 if (debris < 0) {
                     debris = 0;
@@ -247,8 +247,7 @@ public class FetePlugin extends BotPlugin {
                 signService.saveOrUpdate(signRecord);
                 propService.saveOrUpdate(prop);
             }
-            int total = prop.getDebris() + debris;
-            msg.text("\n你目前的碎片数是" + total);
+            msg.text("\n你目前的碎片数是" + prop.getDebris());
 
             bot.sendGroupMsg(groupId, msg, false);
 
@@ -283,11 +282,6 @@ public class FetePlugin extends BotPlugin {
 
 
         return MESSAGE_IGNORE;
-    }
-
-    private int getSco(int pic, int sco) {
-
-        return sco;
     }
 
     public int Lottery() {

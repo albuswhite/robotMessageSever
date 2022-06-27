@@ -47,7 +47,7 @@ public class DualPlugin extends BotPlugin {
         String text = event.getRawMessage();
 
 
-        if (text.startsWith("快点我们打一架")) {
+        if (text.startsWith("快点我们打一架") || text.startsWith("打一架")) {
             List<OnebotBase.Message> messageChain = event.getMessageList();
             OnebotBase.Message people = messageChain.get(1);
             if (people.getType().equals("at")) {
@@ -71,7 +71,7 @@ public class DualPlugin extends BotPlugin {
                 }
                 OnebotBase.Message message = messageChain.get(0);
                 text = message.getDataMap().get("text");
-                text = text.replace("快点我们打一架", "").replace("倍", "").trim();
+                text = text.replace("快点我们打一架", "").replace("打一架","").replace("倍", "").trim();
                 Prop prop = propService.getByQQ(QQ);
                 if (prop.getDebris() < 100) {
                     msg.text("碎片不够的一边呆着去");
